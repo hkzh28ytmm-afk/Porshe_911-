@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porsche 3D 🔥</title>
+
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+  background: radial-gradient(circle at top, #8b0000, #000000);
+  font-family: Arial, sans-serif;
+  color: white;
+  text-align: center;
+}
+
+#ui {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+h1 {
+  font-size: 2.2em;
+  text-shadow: 0 0 15px red;
+}
+
+button {
+  padding: 18px 45px;
+  font-size: 22px;
+  margin: 15px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.yes {
+  background: linear-gradient(45deg, #ff0000, #8b0000);
+  color: white;
+  box-shadow: 0 0 20px red;
+}
+
+.no {
+  background: #000;
+  color: white;
+  position: absolute;
+}
+
+/* مهم: لا نخفي الـ canvas */
+canvas {
+  display: block;
+}
+</style>
+</head>
+
+<body>
+
+<div id="ui">
+  <h1 id="q">هل أنت عاشقة بورش؟</h1>
+  <button class="yes" id="yes">نعم</button>
+  <button class="no" id="no">لا</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
+const ui = document.getElementById("ui");
+
+function moveNo(){
+  noBtn.style.left = (Math.random()*300 - 150) + "px";
+  noBtn.style.top  = (Math.random()*300 - 150) + "px";
+}
+noBtn.addEventListener("mouseover", moveNo);
+noBtn.addEventListener("touchstart", moveNo);
+
+yesBtn.onclick = () => {
+  ui.style.display = "none";
+  start3D();
+};
+
+function start3D(){
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x000000);
+
+  const camera = new THREE.PerspectiveCamera(
+    60,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100
+  );
+  camera.position.set(0, 1.5, 4);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+
+  // أضواء أكشن
+  const redLight = new THREE.DirectionalLight(0xff0000, 1.2);
+  redLight.position.set(5, 5, 5);
+  scene.add(redLight);
+
+  const whiteLight = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(whiteLight);
+
+  // مجسم سيارة 3D (مؤقت لكنه واضح)
+  const car = new THREE.Mesh(
+    new THREE.BoxGeometry(2, 0.6, 1),
+    new THREE.MeshStandardMaterial({
+      color: 0xff0000,
+      metalness: 0.7,
+      roughness: 0.2
+    })
+  );
+  scene.add(car);
+
+  function animate(){
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+}
+</script>
+
+</body>
+</html>
